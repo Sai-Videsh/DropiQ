@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans"
 import { GeistMono } from "geist/font/mono"
 import { ThemeProvider } from "@/components/theme-provider"
 import CursorTail from "@/components/cursor-tail"
+import ScrollToTop from "@/components/scroll-to-top"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ html {
         <ThemeProvider>
           {children}
           <CursorTail />
+          <ScrollToTop />
         </ThemeProvider>
       </body>
     </html>
