@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge"
 import WaitlistForm from "./waitlist-form"
 import SmoothScrollLink from "./smooth-scroll-link"
 import { PlayCircle, Star } from "lucide-react"
-import { useEffect, useState } from "react"
 import Logo from "./logo"
 import dynamic from "next/dynamic"
 
@@ -20,48 +19,6 @@ const AnimatedCounter = dynamic(() => import("./animated-counter"), {
 export default function Hero() {
   const fullLine =
     "We provide 'The Best' products across online and offline markets, with high 'Price vs Features' score"
-  const [typed, setTyped] = useState("")
-
-  useEffect(() => {
-    let i = 0
-    let isTyping = true
-    const speed = 14 // ms per char
-    const holdTime = 3000 // 3 seconds hold
-    const fadeTime = 200 // fast fade out
-
-    const typeText = () => {
-      if (isTyping && i <= fullLine.length) {
-        setTyped(fullLine.slice(0, i))
-        i++
-        if (i > fullLine.length) {
-          // Hold for 3 seconds then start fade out
-          setTimeout(() => {
-            isTyping = false
-            fadeOut()
-          }, holdTime)
-        } else {
-          setTimeout(typeText, speed)
-        }
-      }
-    }
-
-    const fadeOut = () => {
-      setTyped("")
-      // Reset and start typing again
-      setTimeout(() => {
-        i = 0
-        isTyping = true
-        typeText()
-      }, fadeTime)
-    }
-
-    typeText()
-
-    // Cleanup function
-    return () => {
-      isTyping = false
-    }
-  }, [])
 
   const HIGHLIGHT_CLASS =
     "bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 via-lime-600 to-emerald-600 dark:from-cyan-400 dark:via-sky-400 dark:to-cyan-400"
@@ -122,14 +79,14 @@ export default function Hero() {
               </h1>
             </div>
 
-            {/* Large solution statement */}
-            <p className="mt-3 text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-white">
-              <span className="px-1">{highlightQuoted(typed)}</span>
-              <span
-                aria-hidden="true"
-                className="ml-1 inline-block h-[1.2em] w-[2px] align-[-0.1em] animate-pulse bg-emerald-600 dark:bg-cyan-400"
-              />
-            </p>
+            {/* Large solution statement with theme-aware pulsing glow background */}
+            <div className="relative mt-3 inline-block">
+              {/* Glow behind text */}
+              <div className="absolute inset-0 -z-10 rounded-xl blur-2xl opacity-70 glow-bg lightGlow darkGlow" />
+              <p className="relative text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white px-3 py-2">
+                {highlightQuoted(fullLine)}
+              </p>
+            </div>
 
             {/* Tagline line with subtle highlight */}
             <p className="mt-4 text-base sm:text-lg leading-relaxed text-gray-700 dark:text-gray-300">
@@ -264,6 +221,44 @@ export default function Hero() {
     50% {
       transform: translateY(-10px);
     }
+  }
+
+  /* Soft pulsing for the glow behind the paragraph */
+  @keyframes glowPulse {
+    0%, 100% {
+      opacity: 0.6;
+      transform: scale(1);
+      filter: blur(24px);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.06);
+      filter: blur(28px);
+    }
+  }
+
+  .glow-bg {
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+
+  /* Light theme: soft green glow */
+  .lightGlow {
+    background: radial-gradient(
+      80% 70% at 50% 50%,
+      rgba(16,185,129,0.32),
+      rgba(16,185,129,0.18) 40%,
+      transparent 70%
+    );
+  }
+
+  /* Dark theme: cyan gradient glow (overrides in dark mode) */
+  :global(.dark) .darkGlow {
+    background: radial-gradient(
+      80% 70% at 50% 50%,
+      rgba(34,211,238,0.34),
+      rgba(14,165,233,0.22) 40%,
+      transparent 70%
+    );
   }
 `}</style>
     </header>

@@ -16,23 +16,23 @@ type Member = {
 
 const members: Member[] = [
   {
-    name: "Sai Videsh",
-    role: "Founder and Developer",
-    img: "/images/founders/pic-6.png",
-    about:
-      "Student building real-world solutions using Tech and AI. Experienced in multiple internships, hackathons and open-source contributions. Skilled across design, technology, communication, and soft skills. Exploring Startups and Hustles",
-    linkedin: "https://www.linkedin.com/in/sai-videsh-ssv",
-    // twitter: "#",
-  },
-  {
     name: "Senoay Shaw",
-    role: "Founder and Social Media Manager",
+    role: "Founder and AI Engineer",
     img: "/images/founders/seonay_profile.png",
     about:
-      "18-year-old tech innovator with a sharp business mindset, turning emerging trends into impactful solutions. Passionate about startups, problem-solving, and building the future through innovation.",
+    "18-year-old tech innovator with a sharp business mindset, turning emerging trends into impactful solutions. Passionate about startups, problem-solving, and building the future through innovation.",
     linkedin: "https://www.linkedin.com/in/senoay-shaw-3970922a0/",
     // twitter: "#",
   },
+    {
+      name: "Sai Videsh",
+      role: "Founder and Developer",
+      img: "/images/founders/pic-6.png",
+      about:
+        "Student building real-world solutions using Tech and AI. Experienced in multiple internships, hackathons and open-source contributions. Skilled across design, technology, communication, and soft skills. Exploring Startups and Hustles",
+      linkedin: "https://www.linkedin.com/in/sai-videsh-ssv",
+      // twitter: "#",
+    },
 ]
 
 function MemberCard({ m }: { m: Member }) {
