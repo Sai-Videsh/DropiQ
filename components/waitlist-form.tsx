@@ -33,6 +33,7 @@ export default function WaitlistForm({
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { toast } = useToast()
 
   const sizes = {
@@ -42,38 +43,48 @@ export default function WaitlistForm({
   }
 
   async function onSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const parsed = EmailSchema.safeParse({ email })
-    if (!parsed.success) {
-      toast({ title: "Please enter a valid email.", variant: "destructive" })
-      return
-    }
-    try {
-      setLoading(true)
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      })
-      
-      if (!res.ok) {
-        const errorData = await res.json()
-        if (errorData.error === "Email already registered") {
-          toast({ title: "Email already registered", description: "You're already on our waitlist!", variant: "destructive" })
-        } else {
-          throw new Error("Request failed")
-        }
-        return
-      }
-      
-      setShowSuccessPopup(true)
-      setEmail("")
-    } catch {
-      toast({ title: "Something went wrong.", description: "Please try again.", variant: "destructive" })
-    } finally {
-      setLoading(false)
-    }
+  e.preventDefault();
+  setErrorMessage(null);
+  const parsed = EmailSchema.safeParse({ email });
+  if (!parsed.success) {
+    // Corrected code: set the error message and display the toast
+    setErrorMessage("Please enter a valid email.");
+    toast({ title: "Please enter a valid email.", variant: "destructive" });
+    return;
   }
+  try {
+    setLoading(true);
+    const res = await fetch("/api/waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      if (errorData.error === "Email already registered") {
+        setErrorMessage("You're already on our waitlist!");
+        toast({ title: "Email already registered", description: "You're already on our waitlist!", variant: "destructive" });
+      } else if (errorData.error === "Failed to save email") {
+        setErrorMessage("We could not save your email. Please try again.");
+      } else if (errorData.error === "Invalid email") {
+        // Corrected code: handle the "Invalid email" error from the backend
+        setErrorMessage("Please enter a valid email.");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+      return;
+    }
+
+    setShowSuccessPopup(true);
+    setEmail("");
+  } catch (err) {
+    setErrorMessage("Something went wrong. Please try again.");
+    toast({ title: "Something went wrong.", description: "Please try again.", variant: "destructive" });
+  } finally {
+    setLoading(false);
+  }
+}
 
   return (
     <>
@@ -82,21 +93,26 @@ export default function WaitlistForm({
         onSubmit={onSubmit}
         className={cn("w-full flex flex-col gap-3 sm:flex-row sm:items-center", className)}
       >
-        <label className="sr-only" htmlFor={`${id ?? "waitlist"}-email`}>
-          Email address
-        </label>
-        <Input
-          id={`${id ?? "waitlist"}-email`}
-          type="email"
-          placeholder={placeholder}
-          className={cn(
-            "w-full rounded-xl border-gray-200 focus-visible:ring-emerald-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus-visible:ring-cyan-500",
-            sizes[size].input,
+        <div className="w-full">
+          <label className="sr-only" htmlFor={`${id ?? "waitlist"}-email`}>
+            Email address
+          </label>
+          <Input
+            id={`${id ?? "waitlist"}-email`}
+            type="email"
+            placeholder={placeholder}
+            className={cn(
+              "w-full rounded-xl border-gray-200 focus-visible:ring-emerald-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus-visible:ring-cyan-500",
+              sizes[size].input,
+            )}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          {errorMessage && (
+            <p className="mt-2 text-sm text-red-500">{errorMessage}</p>
           )}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        </div>
         <Button
           type="submit"
           disabled={loading}

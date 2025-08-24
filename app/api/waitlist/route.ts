@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     })
 
     if (existing.results.length > 0) {
-      return NextResponse.json({ ok: false, error: "Email already registered" }, { status: 400 })
+      return NextResponse.json({ ok: false, error: "Email already registered" }, { status: 409 })
     }
 
     // 2. Add new entry to Notion
